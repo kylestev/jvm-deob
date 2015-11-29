@@ -1,6 +1,6 @@
 {
-  "name": "jvm-visitor",
-  "version": "0.0.8",
+  "name": "jvm-deob",
+  "version": "0.0.1",
   "main": "./lib/index.js",
   "scripts": {
     "compile": "babel -d lib/ src/",
@@ -10,7 +10,7 @@
     "babel": "^5.8.34"
   },
   "dependencies": {
-    "jvm": "0.0.13",
+    "jvm": "0.0.15",
     "lodash": "^3.10.1"
   }
 }

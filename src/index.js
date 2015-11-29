@@ -1,6 +1,5 @@
-import { ClassVisitor, VerboseClassVisitor } from './ClassVisitor';
+import { UnusedFieldTransform } from './transforms/UnusedFieldTransform';
 
 export {
-  ClassVisitor,
-  VerboseClassVisitor
+  UnusedFieldTransform
 };

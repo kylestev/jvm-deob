@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
 
-import { Jar } from 'jvm';
-import { Pipeline } from '../src/Pipeline';
-import { ClassVisitor } from '../src/ClassVisitor';
+import { Jar, ClassVisitor } from 'jvm';
+import { Pipeline } from 'jvm/lib/util/Pipeline';
 import { Flags } from 'jvm/lib/core/jvm/AccessFlags';
 
 let isVisibleToChildren = (member) => {
@@ -79,7 +78,7 @@ class ReferencedFieldVisitor extends FieldVisitor {
   }
 }
 
-let createFieldUsagePipeline = () => {
+let createFieldUsagePipeline = (logging = true) => {
   let pipeline = new Pipeline;
 
   // analysis/transformation steps
@@ -115,23 +114,25 @@ let createFieldUsagePipeline = () => {
   // output
 
   pipeline.afterStep('identification', (step, elapsed) => {
-    console.log('Fields declared but not referenced: %s.', step.unreferenced.length);
-    console.log('Fields referenced: %s/%s', step.referenced, step.declared);
+    if (logging) {
+      console.log('Fields declared but not referenced: %s.', step.unreferenced.length);
+      console.log('Fields referenced: %s/%s', step.referenced, step.declared);
+    }
   });
 
   pipeline.afterStep('transformation', (step, elapsed) => {
-    console.log('Removed fields from classes in %ss', elapsed);
+    if (logging) {
+      console.log('Removed fields from classes in %ss', elapsed);
+    }
   });
 
-  pipeline.after(elapsed => console.log('Unused Field Pipeline completed in %ss', elapsed));
+  pipeline.after(elapsed => logging && console.log('Unused Field Pipeline completed in %ss', elapsed));
 
   return pipeline;
 }
 
-Jar.unpack(process.argv[2])
-  .then(jar => _.object([...jar]))
-  .then(jar => {
-    createFieldUsagePipeline()
-      .execute(jar);
-  })
-  .catch(console.error.bind(console));
+export function UnusedFieldTransform (jar, logging = true) {
+  createFieldUsagePipeline(logging)
+    .execute(_.object([...jar]))
+  return jar;
+};
